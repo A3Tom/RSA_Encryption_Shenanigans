@@ -2,11 +2,17 @@
 using System.Numerics;
 using System.Text;
 
-var primeCount = 300;
+var primeCount = 2000;
 
 Console.WriteLine($"Calculating the first {primeCount} primes");
 
-_ = PrimeHelper.CalculateNPrimes_Fermat(primeCount);
+var primes = PrimeHelper.CalculateNPrimes(primeCount);
+
+var allPrime = primes.All(PrimeHelper.IsPrime_Fermat);
+
+Console.WriteLine($"All Prime Verification: {allPrime}");
+
+Console.WriteLine($"n+1 prime: {PrimeHelper.CalculateNextPrime(primes.Last())}");
 
 Console.ReadLine();
 

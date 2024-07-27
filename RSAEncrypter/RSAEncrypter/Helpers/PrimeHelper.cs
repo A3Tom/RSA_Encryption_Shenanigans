@@ -15,43 +15,56 @@ public static class PrimeHelper
         return [];
     }
 
-    public static IEnumerable<BigInteger> CalculateNPrimes_Fermat(int primeCount)
+    public static IEnumerable<BigInteger> CalculateNPrimes(int primeCount, int startingInteger = 1)
     {
         var result = new List<BigInteger>();
-
         var sw = new Stopwatch();
-        
-        int i = 1;
         long totalElapsedMS = 0;
 
+        // Is this cheatin ? I feel like it is but I want ma while loop to be cleaner
+        if (startingInteger <= 2)
+            result.Add(2);
+
+        int i = startingInteger;
         while (result.Count < primeCount)
         {
+            if (i == 1)
+            {
+                i++; 
+                continue;
+            }
+
             sw.Reset();
             sw.Start();
 
-            for (int j = 1; j < i; j++)
+            if(IsPrime_Fermat(i))
             {
-                if (BigInteger.DivRem(BigInteger.Pow(j, i - 1), i).Remainder != 1)
-                    break;
-
-                if(j == i - 1)
-                {
-
-                    Console.WriteLine($"Found prime[{result.Count} / {primeCount}]:  {i} in {sw.ElapsedMilliseconds}ms");
-                    totalElapsedMS += sw.ElapsedMilliseconds;
-
-                    result.Add(i);
-                }
+                result.Add(i);
+                Console.WriteLine($"Found prime[{result.Count} / {primeCount}]:  {i} in {sw.ElapsedMilliseconds}ms");
             }
 
+            totalElapsedMS += sw.ElapsedMilliseconds;
             sw.Stop();
 
-            i += 2;
+            i += i % 2 == 0 
+                ? 1 
+                : 2;
         }
 
         Console.WriteLine($"Found {primeCount} prime numbers in {totalElapsedMS}ms with an average of {totalElapsedMS / primeCount}ms per prime resolve");
 
         return result;
+    }
+
+    public static BigInteger CalculateNextPrime(BigInteger prime) => CalculateNPrimes(1, (int)prime + 1).First();
+
+    public static bool IsPrime_Fermat(BigInteger number)
+    {
+        for (int j = 1; j < number; j++)
+            if (BigInteger.ModPow(j, number - 1, number) != 1)
+                return false;
+
+        return true;
     }
 
     public static BigInteger CalculateTotient(BigInteger p, BigInteger q) => BigInteger.Multiply(p - 1, q - 1);
